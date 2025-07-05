@@ -48,6 +48,13 @@ jobs:
         run: |
           minikube addons enable ingress
 
+      - name: Wait for ingress-nginx-controller pod to be ready
+        run: |
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            -l app.kubernetes.io/name=ingress-nginx \
+            --timeout=120s
+
       - name: Deploy to Minikube
         run: |
           helm upgrade --install $RELEASE_NAME ./nginx-custom
