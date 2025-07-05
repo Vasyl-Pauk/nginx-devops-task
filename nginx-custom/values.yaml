@@ -9,4 +9,7 @@ service:
 
 ingress:
   enabled: true
-  host: nginx.local
+  hosts:
+    - host: nginx.local
+      paths:
+        - /
