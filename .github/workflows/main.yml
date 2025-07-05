@@ -1,0 +1,54 @@
+name: hybrid-nginx-custom-workflow
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: docker.io
+  IMAGE_NAME: owlenjoyer/nginx-custom
+  RELEASE_NAME: nginx-release
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t $REGISTRY/$IMAGE_NAME:latest .
+
+      - name: Push Docker image
+        run: |
+          docker push $REGISTRY/$IMAGE_NAME:latest
+
+  deploy:
+    needs: build-push
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Helm chart
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        
+      - name: Enable Minikube Ingress addon
+        run: |
+          minikube addons enable ingress
+
+      - name: Deploy to Minikube
+        run: |
+          helm upgrade --install $RELEASE_NAME ./nginx-custom
+          
