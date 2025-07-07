@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-nginx
 spec:
   rules:
-    - host: {{ .Values.ingress.host }}
+    - host: {{ .Values.ingress.hosts.host }}
       http:
         paths:
           - path: /
