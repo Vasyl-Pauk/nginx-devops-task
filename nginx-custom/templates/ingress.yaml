@@ -7,7 +7,10 @@ spec:
     - host: {{ (index .Values.ingress.hosts 0).host }}
       http:
         paths:
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: {{ .Release.Name }}-nginx
-                port: {{ .Values.service.port }}
+                port:
+                  number: {{ .Values.service.port }}
