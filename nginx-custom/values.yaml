@@ -1,0 +1,12 @@
+image:
+  repository: owlenjoyer/nginx-custom
+  tag: latest
+
+replicaCount: 2
+
+service:
+  port: 80
+
+ingress:
+  hosts:
+    - host: nginx.local
