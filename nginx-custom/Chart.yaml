@@ -1,4 +1,0 @@
-apiVersion: v2
-name: nginx-сustom-chart
-description: A simple Helm chart for deploying NGINX in Minikube
-version: 0.1.0
