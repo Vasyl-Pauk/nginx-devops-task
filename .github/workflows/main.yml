@@ -3,12 +3,11 @@ name: hybrid-nginx-custom-workflow
 on:
   push:
     branches:
-      - main
+      # - main
 
 env:
   REGISTRY: docker.io
   IMAGE_NAME: owlenjoyer/nginx-custom
-  RELEASE_NAME: nginx-release
 
 jobs:
   build-push:
@@ -30,32 +29,3 @@ jobs:
       - name: Push Docker image
         run: |
           docker push $REGISTRY/$IMAGE_NAME:latest
-
-  deploy:
-    needs: build-push
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Helm chart
-        uses: actions/checkout@v4
-
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-        
-      - name: Enable Minikube Ingress addon
-        run: |
-          minikube addons enable ingress
-
-      - name: Wait for ingress-nginx-controller pod to be ready
-        run: |
-          kubectl wait --namespace ingress-nginx \
-            --for=condition=ready pod \
-            -l app.kubernetes.io/component=controller \
-            --timeout=120s
-
-      - name: Deploy to Minikube
-        run: |
-          helm upgrade --install $RELEASE_NAME ./nginx-custom
-          
